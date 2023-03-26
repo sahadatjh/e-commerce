@@ -6,6 +6,12 @@ const createUserSchema = object().shape({
     email           : string().email().required().max(64),
     password        : string().required().min(8).max(64),
     confirmPassword : string().required().oneOf([ref('password'), null], 'password and confirm password must be matched!')
-})
+});
+
+const userLoginSchema = object().shape({
+    email: string().required().email(),
+    password:string().required().min(8).max(64)
+});
 
 module.exports.createUserSchema = createUserSchema;
+module.exports.userLoginSchema = userLoginSchema;
