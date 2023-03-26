@@ -1,7 +1,6 @@
 const { dashboard, createUser, login, updateUser } = require( "./user.controller" );
 const { createUserSchema, userLoginSchema, updateUserSchema } = require( "./user.schema");
 const validate = require( "../core/middlewares/validate" );
-const authenticate = require('../core/middlewares/authenticate');
 const AuthStrategy = require( "./user-authentication.middleware" );
 
 module.exports = (app) => {

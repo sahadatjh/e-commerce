@@ -1,7 +1,7 @@
+const path = require('path');
 const express = require('express');
-const userRoutes = require( '../../modules/user/user.routes' );
 const cookieParser = require("cookie-parser");
-const userStrategy = require( '../../modules/user/user.strategy' );
+const config = require('../index');
 
 module.exports = function () { 
     const app = express();
@@ -9,10 +9,13 @@ module.exports = function () {
     app.use(express.json());
     app.use(cookieParser(process.env.COOKIE_SECRET));
 
-    userRoutes(app);
-    userStrategy();
-
     app.set('port', process.env.PORT);
 
+    const globalConfig =  config.getGlobalConfig();
+
+    globalConfig.routes.forEach(routePath => require(path.resolve(routePath))(app));
+
+    globalConfig.strategies.forEach(strategyPath => require(path.resolve(strategyPath))(app));
+    
     return app;
 }
