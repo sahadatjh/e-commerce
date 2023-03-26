@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const User = require('./user.model');
 
 const users = [];
 
@@ -7,26 +8,28 @@ function dashboard(req, res) {
     res.status(200).send("Welcome to our dashboar!");
 }
 
-function createUser(req, res) {
-    const { firstName, lastName, email, password, confirmPassword } = req.body;
-    
-    if(findUser(email)) return res.status(400).send("User already exists!");
+async function createUser(req, res) {
+    try {
+        const { firstName, lastName, email, password, confirmPassword } = req.body;
+        
+        const userExists = await User.findOne({
+            where: { email }
+        });
 
-    const hashPassword = bcrypt.hashSync(password, 10);    
+        if (userExists) return res.status(400).send("User already registered!");
 
-    const newUser = {
-        firstName,
-        lastName,
-        email,
-        password: hashPassword
+        const user = await User.create({
+            firstName,
+            lastName,
+            email,
+            password
+        });
+
+        res.status(200).send(user);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!")
     }
-
-    users.push(newUser);
-    
-    const modifyedUser = {...newUser};
-    delete modifyedUser.password;
-
-    res.status(200).send(modifyedUser);
 }
 
 function findUser(email) {  
