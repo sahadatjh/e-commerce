@@ -10,7 +10,10 @@ function dashboard(req, res) {
 
 async function getUsers(req, res){
     try {
-        const users = await User.findAll();
+        const users = await User.findAll({
+            attributes: { exclude: ['password']}
+            // attributes: ['id','firstName', 'lastName'] //code for specific field
+        });
 
         res.status(200).send(users);
     } catch (err) {
@@ -43,15 +46,30 @@ async function createUser(req, res) {
     }
 }
 
-function findUser(email) {  
-    const user = users.find(user => user.email === email);
-    return user;
+async function getUserByID(req, res) { 
+    try {
+        const { id } = req.params;
+
+        const user = await User.findOne({
+            where: { id },
+            attributes: { 
+                exclude : ['password']
+            }
+        }) 
+
+        if(!user) return res.status(404).send("User not found!");
+
+        res.status(200).send(user);       
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!");
+    }
 }
 
 function login(req, res) {  
     const { email, password } = req.body;
 
-    const user = findUser(email);
+    const user = getUserByID(email);
     if(!user) return res.status(400).send("Invaid credentials!");
 
     const matchedPass = bcrypt.compareSync(password, user.password);
@@ -76,7 +94,7 @@ function updateUser(req, res) {
     const { firstName, lastName } = req.body;
     const { email } = req.user;
     console.log('User update method \n----------------\n', req.user);
-    const user = findUser(email);
+    const user = getUserByID(email);
     if(!user) return res.status(404).send("User not found!");
 
     user.firstName = firstName;
@@ -88,6 +106,6 @@ function updateUser(req, res) {
 module.exports.dashboard = dashboard;
 module.exports.getUsers = getUsers;
 module.exports.createUser = createUser;
-module.exports.findUser = findUser;
+module.exports.getUserByID = getUserByID;
 module.exports.login = login;
 module.exports.updateUser = updateUser;
