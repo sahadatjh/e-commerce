@@ -8,6 +8,17 @@ function dashboard(req, res) {
     res.status(200).send("Welcome to our dashboar!");
 }
 
+async function getUsers(req, res){
+    try {
+        const users = await User.findAll();
+
+        res.status(200).send(users);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!");
+    }
+}
+
 async function createUser(req, res) {
     try {
         const { firstName, lastName, email, password, confirmPassword } = req.body;
@@ -75,6 +86,7 @@ function updateUser(req, res) {
 }
 
 module.exports.dashboard = dashboard;
+module.exports.getUsers = getUsers;
 module.exports.createUser = createUser;
 module.exports.findUser = findUser;
 module.exports.login = login;
