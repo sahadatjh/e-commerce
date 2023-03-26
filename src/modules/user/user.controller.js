@@ -66,28 +66,35 @@ async function getUserByID(req, res) {
     }
 }
 
-function login(req, res) {  
-    const { email, password } = req.body;
+async function login(req, res) {  
+    try {
+        const { email, password } = req.body;
 
-    const user = getUserByID(email);
-    if(!user) return res.status(400).send("Invaid credentials!");
+        const user = await User.findOne({
+            where: { email },
+            // attributes: { exclude: ['password']}
+        });
 
-    const matchedPass = bcrypt.compareSync(password, user.password);
-    if(!matchedPass) return res.status(400).send("Invalid credentials!");
+        if(!user || !user.password || !user.validPassword(password)) return res.status(400).send("Invaid credentials!");
 
-    const token = jwt.sign({
-        firstName : user.firstName,
-        lastName  : user.lastName,
-        email     : user.email
-    },
-    process.env.TOKEN_SECRET,
-    {
-        expiresIn: '1h',
-        issuer: user.email,
-    });
+        const token = jwt.sign({
+            firstName : user.firstName,
+            lastName  : user.lastName,
+            email     : user.email,
+            id        : user.id
+        },
+        process.env.TOKEN_SECRET,
+        {
+            expiresIn: '1h',
+            issuer: user.email,
+        });
 
-    res.cookie('access_token', token, { httpOnley: true });
-    res.status(200).send(user);
+        res.cookie('access_token', token, { httpOnley: true });
+        res.status(200).send(user);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!");
+    }
 }
 
 function updateUser(req, res) {
