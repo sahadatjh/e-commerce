@@ -13,5 +13,11 @@ const userLoginSchema = object().shape({
     password:string().required().min(8).max(64)
 });
 
+const updateUserSchema = object().shape({
+    firstName: string().required().min(2).max(8),
+    lastName: string().required().min(2).max(8),
+});
+
 module.exports.createUserSchema = createUserSchema;
 module.exports.userLoginSchema = userLoginSchema;
+module.exports.updateUserSchema = updateUserSchema;

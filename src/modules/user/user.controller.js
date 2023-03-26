@@ -53,9 +53,21 @@ function login(req, res) {
         expiresIn: '1h',
         issuer:user.email,
     });
-    console.log(token);
 
     res.cookie('access_token', token, {httpOnley: true });
+    res.status(200).send(user);
+}
+
+function updateUser(req, res) {
+    const { firstName, lastName } = req.body;
+    const { email } = req.user;
+    // console.log('User update method \n----------------\n', req.user);
+    const user = findUser(email);
+    if(!user) return res.status(404).send("User not found!");
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+
     res.status(200).send(user);
 }
 
@@ -63,3 +75,4 @@ module.exports.dashboard = dashboard;
 module.exports.createUser = createUser;
 module.exports.findUser = findUser;
 module.exports.login = login;
+module.exports.updateUser = updateUser;
