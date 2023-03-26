@@ -44,24 +44,24 @@ function login(req, res) {
     if(!matchedPass) return res.status(400).send("Invalid credentials!");
 
     const token = jwt.sign({
-        firstName :user.firstName,
+        firstName : user.firstName,
         lastName  : user.lastName,
-        email     :user.email
+        email     : user.email
     },
     process.env.TOKEN_SECRET,
     {
         expiresIn: '1h',
-        issuer:user.email,
+        issuer: user.email,
     });
 
-    res.cookie('access_token', token, {httpOnley: true });
+    res.cookie('access_token', token, { httpOnley: true });
     res.status(200).send(user);
 }
 
 function updateUser(req, res) {
     const { firstName, lastName } = req.body;
     const { email } = req.user;
-    // console.log('User update method \n----------------\n', req.user);
+    console.log('User update method \n----------------\n', req.user);
     const user = findUser(email);
     if(!user) return res.status(404).send("User not found!");
 
