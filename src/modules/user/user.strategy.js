@@ -1,6 +1,6 @@
 const passport = require( "passport" );
 const { Strategy } = require( "passport-jwt" );
-const { findUser } = require( "./user.controller" );
+const { getUserByEmail } = require( "./user.controller" );
 
 module.exports = function(){
     function cookieExtractor(req) {
@@ -19,10 +19,12 @@ module.exports = function(){
             secretOrKey: process.env.TOKEN_SECRET,
             jwtFromRequest: cookieExtractor
         }, 
-        function (payload, done) {
-            const user = findUser(payload.email);
-            
-            if(!user) return done(null, false);
+        async function (payload, done) {
+            const user = await getUserByEmail(payload.email);
+
+            if(!user) {
+                return done(null, false);
+            }
             done(null, user)
         })
     );

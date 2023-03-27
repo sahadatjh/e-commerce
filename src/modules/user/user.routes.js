@@ -7,7 +7,7 @@ module.exports = (app) => {
     app.get('/', dashboard);
 
     app.route('/users')
-        .get(getUsers)
+        .get(AuthStrategy, getUsers)
         .post(validate(createUserSchema), createUser)
         .patch(AuthStrategy, validate(updateUserSchema), updateUser);
     

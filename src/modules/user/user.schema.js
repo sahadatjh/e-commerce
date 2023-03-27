@@ -14,8 +14,8 @@ const userLoginSchema = object().shape({
 });
 
 const updateUserSchema = object().shape({
-    firstName: string().required().min(2).max(8),
-    lastName: string().required().min(2).max(8),
+    firstName: string().required().min(2).max(100),
+    lastName: string().required().min(2).max(100),
 });
 
 module.exports.createUserSchema = createUserSchema;

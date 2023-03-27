@@ -66,6 +66,19 @@ async function getUserByID(req, res) {
     }
 }
 
+async function getUserByEmail(email) { 
+    try {
+        const user = await User.findOne({
+            where: { email }
+        })
+        
+        return user;
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!");
+    }
+}
+
 async function login(req, res) {  
     try {
         const { email, password } = req.body;
@@ -97,17 +110,34 @@ async function login(req, res) {
     }
 }
 
-function updateUser(req, res) {
-    const { firstName, lastName } = req.body;
-    const { email } = req.user;
-    console.log('User update method \n----------------\n', req.user);
-    const user = getUserByID(email);
-    if(!user) return res.status(404).send("User not found!");
+async function updateUser(req, res) {
+    try {
+        const { firstName, lastName } = req.body;
+        const { email } = req.user;
 
-    user.firstName = firstName;
-    user.lastName = lastName;
+        const user = await User.findOne({
+            where: { email },
+        });
 
-    res.status(200).send(user);
+        if(!user) return res.status(404).send("User not found!");
+
+        await User.update({
+            firstName, 
+            lastName
+        },
+        {
+            where: { email }
+        });
+
+        const updateUser =  await User.findOne({
+            where: { email },
+        });
+
+        res.status(200).send(updateUser);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!");
+    }
 }
 
 module.exports.dashboard = dashboard;
@@ -116,3 +146,4 @@ module.exports.createUser = createUser;
 module.exports.getUserByID = getUserByID;
 module.exports.login = login;
 module.exports.updateUser = updateUser;
+module.exports.getUserByEmail = getUserByEmail;
