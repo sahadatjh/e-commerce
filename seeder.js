@@ -9,6 +9,7 @@ function init() {
     sequelize.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`)
         .then(() => {
             require('./src/modules/user/user.model');
+            require('./src/modules/service/service.model');
             sequelize.sync()
                 .then(() => {
                     console.log("DB seed copleted!");
