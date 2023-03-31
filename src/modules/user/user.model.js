@@ -46,7 +46,6 @@ const User = sequelize.define(
     }
 );
 
-
 User.prototype.validPassword = function (password) {  
     return bcrypt.compareSync(password, this.password);
 };

@@ -34,3 +34,5 @@ const Service = sequelize.define(
         updatedAt: 'updated_at'
     }
 )
+
+module.exports = Service;   
