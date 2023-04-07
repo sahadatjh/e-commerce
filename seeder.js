@@ -10,6 +10,7 @@ function init() {
         .then(() => {
             require('./src/modules/user/user.model');
             require('./src/modules/service/service.model');
+            require('./src/modules/permission/permission.model');
             sequelize.sync()
                 .then(() => {
                     console.log("DB seed copleted!");

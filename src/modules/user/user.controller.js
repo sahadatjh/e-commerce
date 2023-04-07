@@ -99,15 +99,21 @@ async function login(req, res) {
         process.env.TOKEN_SECRET,
         {
             expiresIn: '1h',
-            issuer: user.email,
+            // issuer: user.email,
         });
 
-        res.cookie('access_token', token, { httpOnley: true });
+        res.cookie('access_token', token, { httpOnly: true });
         res.status(200).send(user);
     } catch (err) {
         console.log(err);
         res.status(500).send("Internal server error!");
     }
+}
+
+async function logout(req, res) {  
+    res.clearCookie('access_token');
+
+    res.status(200).send("Logout seccessfully!");
 }
 
 async function updateUser(req, res) {
@@ -140,10 +146,28 @@ async function updateUser(req, res) {
     }
 }
 
+async function deleteUser(req, res) {  
+    try {
+        console.log('delete method!');
+        const user = await User.findOne({ where: { id: req.params.id } });
+
+        if(!user) return res.status(404).send("User not found!");
+
+        await user.destroy();
+
+        res.status(200).send(user);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal server error!');
+    }
+}
+
 module.exports.dashboard = dashboard;
 module.exports.getUsers = getUsers;
 module.exports.createUser = createUser;
 module.exports.getUserByID = getUserByID;
 module.exports.login = login;
+module.exports.logout = logout;
 module.exports.updateUser = updateUser;
 module.exports.getUserByEmail = getUserByEmail;
+module.exports.deleteUser = deleteUser;

@@ -2,11 +2,10 @@ const Service = require('./service.model');
 
 async function createService(req, res){
     try {
-        const { name, description, created_by, updated_by } = req.body;
-
-        const isExists = await Service.findOne({
-            where: { name }
-        });
+        const { name, description } = req.body;
+        const created_by = updated_by = req.user.id;
+        
+        const isExists = await Service.findOne({ where: { name } });
 
         if(isExists) return res.status(400).send("Service already exists!");
 
@@ -34,18 +33,61 @@ async function getServices(req, res) {
     }
 }
 
-async function getSeviceById(req, res) {  
-    const { id } = req.params;
+async function getSeviceById(req, res) { 
+    try {
+        const service =await Service.findOne({
+            where:{ id: req.params.id }
+        })
 
-    const service =await Service.findOne({
-        where:{ id }
-    })
+        if(!service) return res.status(404).send("Service not found!");
 
-    if(!service) return res.status(404).send("Service not found!");
+        res.status(200).send(service); 
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal server error!');
+    }
+}
 
-    res.status(200).send(service);
+async function updateService(req, res) {  
+    try {
+        const { name, description } = req.body;
+        const updated_by = req.user.id;
+        const service_id = req.params.id;
+
+        console.log("hi", service_id);
+        const service = await Service.findOne({ where: { id: service_id } });
+
+        if(!service) return res.status(404).send("Servie not found!");
+
+        await service.update({ name, description, updated_by });
+
+        const updatedService = await Service.findOne({ id: service_id });
+        
+        res.status(200).send(updatedService);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!")
+    }
+}
+
+async function deleteService(req, res) {  
+    try {
+        const service = await Service.findOne({ where: { id: req.params.id } });
+
+        if(!service) return res.status(404).send("Service not found!");
+
+        await service.destroy();
+
+        res.status(200).send(service);
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server error!")
+    }
 }
 
 module.exports.createService = createService;
 module.exports.getServices = getServices;
 module.exports.getSeviceById = getSeviceById;
+module.exports.updateService = updateService;
+module.exports.deleteService = deleteService;
