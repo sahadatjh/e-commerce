@@ -1,4 +1,6 @@
+const Service = require( '../service/service.model' );
 const Permission = require('./permission.model');
+const ServicePermission = require( './service-permission.model' );
 
 async function createPermission(req, res){
     try {
@@ -24,7 +26,17 @@ async function createPermission(req, res){
 
 async function getPermissions(req, res) {  
     try {
-        const permissions = await Permission.findAll();
+        const permissions = await Permission.findAll({
+            include:[{
+                    model: ServicePermission,
+                    as: 'servicePermissions',
+                    include: [{
+                        model: Service,
+                        as: 'service'
+                    }]
+                }]
+
+        });
         res.status(200).send(permissions);
     } catch (err) {
         console.log(err);
