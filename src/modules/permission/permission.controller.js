@@ -4,7 +4,7 @@ const ServicePermission = require( './service-permission.model' );
 
 async function createPermission(req, res){
     try {
-        const { name } = req.body;
+        const { name, description } = req.body;
         const created_by = updated_by = updated_by = req.user.id
 
         const isExists = await Permission.findOne({ where: { name } });
@@ -13,6 +13,7 @@ async function createPermission(req, res){
 
         const permission = await Permission.create({
             name,
+            description,
             created_by,
             updated_by
         })
@@ -53,7 +54,7 @@ async function getPrmissionById(req, res) {
 }
 
 async function updatePermission(req, res){
-    const { name } = req.body;
+    const { name, description } = req.body;
     const updated_by = req.user.id;
     const permission_id = req.params.id;
 
@@ -61,7 +62,7 @@ async function updatePermission(req, res){
 
     if(!permission) return res.status(404).send("Permission not found!");
 
-    await permission.update({ name, updated_by });
+    await permission.update({ name, description, updated_by });
 
     const updatedPermission = await Permission.findOne({ id: permission_id });
     

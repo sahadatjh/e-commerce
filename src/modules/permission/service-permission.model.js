@@ -17,14 +17,6 @@ const ServicePermission = sequelize.define(
         },
         permission_id: {
             type: DataTypes.UUID
-        },
-        created_by: {
-            allowNull: true,
-            type: DataTypes.UUID,
-        },
-        updated_by: {
-            allowNull: true,
-            type: DataTypes.UUID,
         }
     },
     {
