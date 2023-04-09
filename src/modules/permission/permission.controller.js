@@ -2,6 +2,26 @@ const Service = require( '../service/service.model' );
 const Permission = require('./permission.model');
 const ServicePermission = require( './service-permission.model' );
 
+async function getPermissions(req, res) {  
+    try {
+        const permissions = await Permission.findAll({
+            include:[{
+                    model: ServicePermission,
+                    as: 'servicePermissions',
+                    include: [{
+                        model: Service,
+                        as: 'service'
+                    }]
+                }]
+
+        });
+        res.status(200).send(permissions);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal server error!');
+    }
+}
+
 async function createPermission(req, res){
     try {
         const { name, description } = req.body;
@@ -19,26 +39,6 @@ async function createPermission(req, res){
         })
 
         res.status(200).send(permission);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send('Internal server error!');
-    }
-}
-
-async function getPermissions(req, res) {  
-    try {
-        const permissions = await Permission.findAll({
-            include:[{
-                    model: ServicePermission,
-                    as: 'servicePermissions',
-                    include: [{
-                        model: Service,
-                        as: 'service'
-                    }]
-                }]
-
-        });
-        res.status(200).send(permissions);
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal server error!');
@@ -83,8 +83,8 @@ async function deletePermission(req, res){
         res.status(500).send("Internal server error!")
     }
 }
-module.exports.createPermission = createPermission;
 module.exports.getPermissions = getPermissions;
+module.exports.createPermission = createPermission;
 module.exports.getPrmissionById = getPrmissionById;
 module.exports.updatePermission = updatePermission;
 module.exports.deletePermission = deletePermission;
